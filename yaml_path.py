@@ -37,6 +37,12 @@ class YamlPath(sublime_plugin.TextCommand):
         # Essentially we only care about the first one.
         regions = self.view.sel()
         cursor_position = regions[0].begin()
+
+        scope_name = self.view.scope_name(cursor_position)
+        if "source.yaml" not in scope_name:
+            sublime.error_message("Not YAML.")
+            return
+
         region_of_line = self.view.line(cursor_position)
         end_of_line = region_of_line.end()
         beginning_of_buffer_till_end_of_line = sublime.Region(0, end_of_line)
