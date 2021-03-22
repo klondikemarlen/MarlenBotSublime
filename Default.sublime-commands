@@ -1,6 +1,10 @@
 [
   {
     "caption": "YAML Path: Copy Path at Cursor",
-    "command": "yaml_path"
+    "command": "yaml_path_copy"
+  },
+  {
+    "caption": "YAML Path: Translate",
+    "command": "yaml_path_translate"
   }
 ]

@@ -2,6 +2,8 @@ from collections import OrderedDict
 
 import sublime
 import sublime_plugin
+
+import requests
 import yaml
 
 
@@ -30,7 +32,7 @@ def flatten(data, parent_key='', sep='.'):
     return OrderedDict(items)
 
 
-class YamlPath(sublime_plugin.TextCommand):
+class YamlPathCopy(sublime_plugin.TextCommand):
     def run(self, edit):
         # Gross simplification, sel() returns a bunch of regions
         # regions have start and end points.
@@ -58,3 +60,30 @@ class YamlPath(sublime_plugin.TextCommand):
         key_at_cursor, value_at_cursor = flatten(data).popitem()
         sublime.set_clipboard(key_at_cursor)
         sublime.status_message("Path is '{}' ({}), copied to clipboard.".format(key_at_cursor, repr(value_at_cursor)))
+
+
+class YamlPathTranslate(sublime_plugin.TextCommand):
+    def run(self, edit):
+        translations = []
+        for region in self.view.sel():
+            selection_as_text = self.view.substr(region)
+
+            r = requests.get(
+                "https://translate.googleapis.com/translate_a/single",
+                params=dict(
+                    client="gtx",
+                    sl="auto",
+                    tl="fr",
+                    dt="t",
+                    q=selection_as_text,
+                )
+            )
+
+            # extract translation
+            translated_value = ''.join((value[0] for value in r.json()[0]))
+            self.view.replace(edit, region, translated_value)
+
+            translations.append(translated_value)
+
+        sublime.set_clipboard('\n'.join(translations))
+        sublime.status_message("Translated {} lines.".format(len(translations)))
