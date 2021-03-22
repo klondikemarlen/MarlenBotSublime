@@ -4,8 +4,6 @@ import sublime
 import sublime_plugin
 import yaml
 
-from pprint import pprint as pp
-
 
 # from https://stackoverflow.com/a/21912744
 def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
@@ -32,7 +30,7 @@ def flatten(data):
         return data
 
 
-class YamlPathCommand(sublime_plugin.TextCommand):
+class YamlPath(sublime_plugin.TextCommand):
     def run(self, edit):
         file_name = self.view.file_name()
 
@@ -44,8 +42,11 @@ class YamlPathCommand(sublime_plugin.TextCommand):
 
         data = None
         with open(file_name) as f:
-            data = ordered_load(f.read(cursor_position))
+            try:
+                data = ordered_load(f.read(cursor_position))
+            except yaml.parser.ParserError:
+                sublime.status_message("Failed to parse YAML file.")
 
         key_at_cursor, value_at_cursor = flatten(data).popitem()
         sublime.set_clipboard(key_at_cursor)
-        sublime.status_message('Path is "{}" ({}), copied to clipboard.'.format(key_at_cursor, value_at_cursor))
+        sublime.status_message("Path is '{}' (value {}), copied to clipboard.".format(key_at_cursor, repr(value_at_cursor)))

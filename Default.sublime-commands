@@ -1,0 +1,6 @@
+[
+  {
+    "caption": "YAML Path: Copy Path at Cursor",
+    "command": "yaml_path"
+  }
+]
