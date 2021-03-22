@@ -18,16 +18,16 @@ def ordered_load(stream, Loader=yaml.SafeLoader, object_pairs_hook=OrderedDict):
     return yaml.load(stream, OrderedLoader)
 
 
-def flatten(data):
-    flatter_data = OrderedDict()
-
-    try:
-        for outer_key, outer_value in data.items():
-            for inner_key, inner_value in outer_value.items():
-                flatter_data['.'.join([outer_key, inner_key])] = inner_value
-        return flatten(flatter_data)
-    except AttributeError:
-        return data
+# From https://stackoverflow.com/questions/6027558/flatten-nested-dictionaries-compressing-keys
+def flatten(data, parent_key='', sep='.'):
+    items = []
+    for k, v in data.items():
+        new_key = parent_key + sep + str(k) if parent_key else str(k)
+        try:
+            items.extend(flatten(v, new_key, sep=sep).items())
+        except AttributeError:
+            items.append((new_key, v))
+    return OrderedDict(items)
 
 
 class YamlPath(sublime_plugin.TextCommand):
