@@ -1,10 +1,10 @@
 [
   {
-    "caption": "YAML Path: Copy Path at Cursor",
-    "command": "yaml_path_copy"
+    "caption": "Marlen Bot: Copy YAML Path at Cursor",
+    "command": "marlen_bot_yaml_path"
   },
   {
-    "caption": "YAML Path: Translate",
-    "command": "yaml_path_translate"
+    "caption": "Marlen Bot: Translate",
+    "command": "marlen_bot_translate"
   }
 ]
