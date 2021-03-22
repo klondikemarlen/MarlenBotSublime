@@ -32,7 +32,7 @@ def flatten(data, parent_key='', sep='.'):
     return OrderedDict(items)
 
 
-class YamlPathCopy(sublime_plugin.TextCommand):
+class MarlenBotYamlPath(sublime_plugin.TextCommand):
     def run(self, edit):
         # Gross simplification, sel() returns a bunch of regions
         # regions have start and end points.
@@ -62,7 +62,7 @@ class YamlPathCopy(sublime_plugin.TextCommand):
         sublime.status_message("Path is '{}' ({}), copied to clipboard.".format(key_at_cursor, repr(value_at_cursor)))
 
 
-class YamlPathTranslate(sublime_plugin.TextCommand):
+class MarlenBotTranslate(sublime_plugin.TextCommand):
     def run(self, edit):
         translations = []
         for region in self.view.sel():
