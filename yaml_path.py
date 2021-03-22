@@ -32,21 +32,22 @@ def flatten(data, parent_key='', sep='.'):
 
 class YamlPath(sublime_plugin.TextCommand):
     def run(self, edit):
-        file_name = self.view.file_name()
-
         # Gross simplification, sel() returns a bunch of regions
         # regions have start and end points.
         # Essentially we only care about the first one.
         regions = self.view.sel()
-        line_at_cursor = self.view.line(regions[0])
-        end_of_line = line_at_cursor.end()
+        cursor_position = regions[0].begin()
+        region_of_line = self.view.line(cursor_position)
+        end_of_line = region_of_line.end()
+        beginning_of_buffer_till_end_of_line = sublime.Region(0, end_of_line)
+        selection_as_text = self.view.substr(beginning_of_buffer_till_end_of_line)
 
         data = None
-        with open(file_name, encoding="utf-8") as f:
-            try:
-                data = ordered_load(f.read(end_of_line))
-            except yaml.parser.ParserError:
-                sublime.status_message("Failed to parse YAML file.")
+        try:
+            data = ordered_load(selection_as_text)
+        except yaml.parser.ParserError:
+            sublime.error_message("Failed to parse YAML file.")
+            return
 
         key_at_cursor, value_at_cursor = flatten(data).popitem()
         sublime.set_clipboard(key_at_cursor)
