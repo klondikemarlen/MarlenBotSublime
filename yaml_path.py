@@ -41,7 +41,7 @@ class YamlPath(sublime_plugin.TextCommand):
         cursor_position = regions[0].begin()
 
         data = None
-        with open(file_name) as f:
+        with open(file_name, encoding="utf-8") as f:
             try:
                 data = ordered_load(f.read(cursor_position))
             except yaml.parser.ParserError:
