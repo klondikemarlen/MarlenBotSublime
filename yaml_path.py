@@ -38,15 +38,16 @@ class YamlPath(sublime_plugin.TextCommand):
         # regions have start and end points.
         # Essentially we only care about the first one.
         regions = self.view.sel()
-        cursor_position = regions[0].begin()
+        line_at_cursor = self.view.line(regions[0])
+        end_of_line = line_at_cursor.end()
 
         data = None
         with open(file_name, encoding="utf-8") as f:
             try:
-                data = ordered_load(f.read(cursor_position))
+                data = ordered_load(f.read(end_of_line))
             except yaml.parser.ParserError:
                 sublime.status_message("Failed to parse YAML file.")
 
         key_at_cursor, value_at_cursor = flatten(data).popitem()
         sublime.set_clipboard(key_at_cursor)
-        sublime.status_message("Path is '{}' (value {}), copied to clipboard.".format(key_at_cursor, repr(value_at_cursor)))
+        sublime.status_message("Path is '{}' ({}), copied to clipboard.".format(key_at_cursor, repr(value_at_cursor)))
